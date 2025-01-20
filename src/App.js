@@ -6,6 +6,14 @@ import Modal from "./Modal";
 
 function App() {
   // State 정의 시작
+  // 입력 상자 글 받아서 저장하는 state 
+  const [InputValue, setInputValue] = 
+  useState('');
+
+
+  const [ContentValue, setContentValue] = 
+  useState('');
+
 
   let post = "첫 블로그 글";
 
@@ -106,7 +114,7 @@ function App() {
       } */}
       {title.map((x, index) => {
         return (
-          <div className="list">
+          <div className="list" key={index}>
             <h4
               onClick={() => {
                 // 현재 선택한 인덱스를 스테이트에 저장
@@ -119,17 +127,105 @@ function App() {
                 } else setShowModal(false);
               }}
             >
+
               {title[index]}
               <span onClick={(e) => {
                 e.stopPropagation();
                 addLike(index)}}
                 >👍</span>
               {like[index]}
+              <span onClick={(e)=>{
+                e.stopPropagation();
+
+                let tempTitle = [...title];
+                let tempLike = [...like];
+                let tempDate = [...createDate];
+                let tempContent =[...content];
+                
+                tempTitle.splice(index,1);
+                tempLike.splice(index,1);
+                tempDate.splice(index,1);
+                tempContent.splice(index,1);
+
+                setTitle([...tempTitle])
+                setLike([...tempLike])
+                setCreateDate([...tempDate])
+                
+              }}>
+                &nbsp; 🗑
+              </span>
             </h4>
             <p>작성일 : {createDate[index]}</p>
           </div>
         );
       })}
+
+      {/* 입력상자 만들고 입력 받기 */}
+      <div>
+        <div>
+        <span>추가할 제목 입력</span>
+        <input id ="title" onChange={(e)=>{
+          setInputValue(e.target.value);
+        }}></input>
+        </div>
+
+        <div>
+       <span>추가할 내용 입력</span>
+        <input id="content" onChange={(e)=>{
+          setContentValue(e.target.value);
+        }}></input>
+        </div>
+
+        <button onClick={()=>{
+          // inputValue 의 값 확인 후 배열에 추가
+          if(document.querySelector('#title').value==''){
+            alert('글을 제목을 입력하세요.');
+            document.querySelector('input').focus();
+            return;
+          } else if (document.querySelector('#content').value=='') {
+            alert('글의 내용을 입력하세요.');
+           }
+            return;
+          
+
+          //inputValue --> title 배열에 글을 추가
+          let temp = [...title];
+          temp.unshift(InputValue);
+          setTitle([...temp]);
+
+          //inputValue --> Content 배열에 글을 추가
+          let tempContent = [...content];
+          tempContent.unshift(ContentValue);
+          setContent([...tempContent]);
+
+
+
+          // 좋아요. 빈 배열 하나 추가 0으로 셋팅
+          let tempLike = [...like];
+          tempLike.unshift(0);
+          setLike([...tempLike]);
+
+
+
+          // 오늘 날짜 찾아서 
+          let today = new Date();
+          let year = today.getFullYear();
+          let month = today.getMonth()+1;
+          let day =today.getDate();
+          let dateString = year + '년' + month + '월' + day + '일';
+          console.log(dateString);
+
+          let tempDate = [...createDate];
+          tempDate.unshift(dateString);
+          setCreateDate([...tempDate]);
+          // content 내용 입력 받아서 추가로 처리하기 
+
+          document.querySelector('#title').value='';
+          document.querySelector('#Content').value='';
+
+
+        }}>글 생성</button>
+      </div>
 
       {/* 남자코드 추천 */}
       {/* 버튼을 클릭하면 ->  여자코트 추천으로 변경 ->  */}
